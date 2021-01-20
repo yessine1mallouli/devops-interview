@@ -37,14 +37,20 @@ You can test the server with `curl http://localhost:5000/input` or directly in y
 
 ### Solver behavior
 
-Here is how your script should behave:
+You should be able to launch your solver server with:
 
 ```shell
-$> python your-solution.py ([]){}
-INPUT: ([]){} -- RESULT: OK!
-$> python your-solution.py ([)]{}
+python <your-server.py>
+```
+
+and then query it as follows:
+
+```shell
+$> curl -d '{{[()]}}' localhost:5001/solve
+INPUT: [({})] -- RESULT: OK!
+$> curl -d '(((]' localhost:5001/solve
 INPUT: (((] -- RESULT: BAD INPUT :(
-$> python your-solution.py # Here, the input will be provided by the generator
+$> curl -X POST localhost:5001/solve # ask the generator server when there are no input to the program
 INPUT: <generated input> -- RESULT: <...>
 ```
 
@@ -70,7 +76,7 @@ INPUT: [({})] -- RESULT: OK!
 $> curl -d '(((]' localhost:5001/solve
 INPUT: (((] -- RESULT: BAD INPUT :(
 $> curl -X POST localhost:5001/solve # ask the generator server when there are no input to the program
-INPUT: {{()}} -- RESULT: BAD INPUT :(
+INPUT: <generated input> -- RESULT: <...>
 ```
 
 **BONUS**: Write a `docker-compose.yml` file which runs both the generator server and the solver program when running `docker-compose up`.
