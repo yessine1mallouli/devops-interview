@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 supported_os = {
-  :ubuntu => { :version => "bionic64", :network => { :host => 8080 } }
+  :ubuntu => { :version => "bionic64" }
 }
 
 unless Vagrant.has_plugin?("vagrant-disksize")
@@ -18,7 +18,8 @@ Vagrant.configure("2") do |config|
       # Create a forwarded port mapping which allows access to a specific port
       # within the machine from a port on the host machine and only allow access
       # via 127.0.0.1 to disable public access
-      vm_config.vm.network "forwarded_port", guest: 80, host: os_parameters[:network][:host], host_ip: "127.0.0.1"
+      vm_config.vm.network "forwarded_port", guest: 5000, host: 5000
+      vm_config.vm.network "forwarded_port", guest: 5001, host: 5001
 
       # Create a private network, which allows host-only access to the machine
       # using a specific IP.

@@ -12,6 +12,8 @@ Depending on your knowledge of the several tools, this exercise may take about 1
 There will be 4 steps, and the two last ones are optional: we don't expect you to finish all steps if you're completely unfamiliar with some concepts.
 You will have to create a git repository (on github.com or somewhere else) with your work and a small documentation (a README.md like this one is enough) to explain how to use it.
 
+Any question ? write me an email at **simon@arkhn.com**
+
 ## STEP 1: A small python program
 
 First, you'll have to implement a basic algorithm that solves the following problem:
@@ -33,7 +35,7 @@ python generator-server/src/server.py
 It's a very basic flask application with a single http route: `/input`. With a `GET` query on this route, you'll be returned a response with an input string as text.
 You can test the server with `curl http://localhost:5000/input` or directly in your browser.
 
-### Solution behavior
+### Solver behavior
 
 Here is how your script should behave:
 
@@ -52,19 +54,22 @@ INPUT: <generated input> -- RESULT: <...>
 
 **NB**: You need to install Docker for this step.
 
-The goal of this step is to write a Dockerfile in order to containerize the python applications. The result is a docker image which can be used using `docker run <your_image>`.
+The goal of this step is to write a Dockerfile in order to containerize both python applications (`generator` ans `solver`). The result is a docker image (or two) which can be used using `docker run <your_image>`.
 
-The python program must behave the same way than when running it locally.
+The python programs must behave the same way than when running it locally.
 
 Example:
 
 ```shell
+$> docker build -t generator .
+$> docker run -p 5000:5000 -d generator
 $> docker build -t solver .
-$> docker run solver [({})]
+$> docker run -p 5001:5001 -d solver
+$> curl -d '{{[()]}}' localhost:5001/solve
 INPUT: [({})] -- RESULT: OK!
-$> docker run solver (((]
+$> curl -d '(((]' localhost:5001/solve
 INPUT: (((] -- RESULT: BAD INPUT :(
-$> docker run solver # ask the generator server when there are no input to the program
+$> curl -X POST localhost:5001/solve # ask the generator server when there are no input to the program
 INPUT: {{()}} -- RESULT: BAD INPUT :(
 ```
 
@@ -90,8 +95,33 @@ The CI workflow should be triggered by a commit on any branch. The examiner (me)
 - vagrant-disksize: `vagrant plugin install vagrant-disksize`
 
 In this exercise, we want to deploy our dockerized services to a remote machine. Since it would be complex to provision a machine on the cloud, you will simply use a VM on your machine.
-We provide a `Vagrantfile` in order to setup a VM on your machine. Here is the command you have to use to start the VM:
+
+Vagrant is a tool to setup virtual environments easily. It works with a simple configuration file called the `Vagrantfile`.
+
+We provide you with a `Vagrantfile` in order to setup a VM on your machine. Here is the command you have to use to start the VM:
 
 ```shell
 $> vagrant up ubuntu
+```
+
+You will have to use [Ansible](https://docs.ansible.com/ansible/latest/user_guide/index.html) in order to do deploy the services.
+
+Your ansible host configuration (see [inventories](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#intro-inventory)) should have the following variables:
+
+```yaml
+ansible_host: localhost
+ansible_user: vagrant
+ansible_port: 2222
+ansible_ssh_private_key_file: .vagrant/machines/default/virtualbox/private_key
+```
+
+The goal of this exercise is to write an ansible playbook that will deploy the `generator` and `solver` services on the VM. (Hint: the bonus of step 3 is pretty useful for this).
+
+Example:
+
+```shell
+$> ansible-playbook -i inventory_folder/ -l my_host -vv playbook.yml
+# wait for deployment to be over
+$> curl -d '{{[()]}}' localhost:5001/solve
+INPUT: [({})] -- RESULT: OK!
 ```
