@@ -4,9 +4,9 @@
 
 If you're there it means you've succesfully passed the first interview, congratulations :)
 
-**It is now time to demonstrate your amazing skills !**
+**It is now time to demonstrate your amazing skills!**
 
-Don't worry if you don't already know all the tools we will be using through this exercise: reading documentation and learning is a part of it !
+Don't worry if you don't already know all the tools we will be using through this exercise: reading documentation and learning is a part of it!
 Depending on your knowledge of the several tools, this exercise may take about 1-4 hours.
 
 There will be 4 steps, and the two last ones are optional: we don't expect you to finish all steps if you're completely unfamiliar with some concepts.
@@ -14,7 +14,39 @@ You will have to create a git repository (on github.com or somewhere else) with 
 
 ## STEP 1: A small python program
 
-**JASON**
+First, you'll have to implement a basic algorithm that solves the following problem:
+
+Given a string composed of the characters `(`, `)`, `[`, `]`, `{`, `}`, you need to tell if this string is balanced or not. What we call a balanced string is one where all the brackets are closed in the right order.
+
+For instance, `([]){}` is balanced, whereas `([)]{}` or `(()` are not.
+
+The input will whether come from the user launching the script or, if none is provided, your code should query a `generator` service which is provided in this repo.
+
+### Generator server
+
+You can launch the generator server with the following command:
+
+```shell
+python generator-server/src/server.py
+```
+
+It's a very basic flask application with a single http route: `/input`. With a `GET` query on this route, you'll be returned a response with an input string as text.
+You can test the server with `curl http://localhost:5000/input` or directly in your browser.
+
+### Solution behavior
+
+Here is how your script should behave:
+
+```shell
+$> python your-solution.py ([]){}
+INPUT: ([]){} -- RESULT: OK!
+$> python your-solution.py ([)]{}
+INPUT: (((] -- RESULT: BAD INPUT :(
+$> python your-solution.py # Here, the input will be provided by the generator
+INPUT: <generated input> -- RESULT: <...>
+```
+
+**NB**: If you really don't want to use Python, feel free to choose your favorite language.
 
 ## STEP 2: Dockerizing the program
 
@@ -29,7 +61,7 @@ Example:
 ```shell
 $> docker build -t solver .
 $> docker run solver [({})]
-INPUT: [({})] -- RESULT: OK !
+INPUT: [({})] -- RESULT: OK!
 $> docker run solver (((]
 INPUT: (((] -- RESULT: BAD INPUT :(
 $> docker run solver # ask the generator server when there are no input to the program
