@@ -9,6 +9,17 @@ def heads_or_tails():
     return random.randint(0, 1) == 1
 
 
+def build_valid_string(remaining):
+    if remaining == 0:
+        return ""
+
+    new_brackets = random.choice(("()", "[]", "{}"))
+    if heads_or_tails():
+        return f"{new_brackets}{build_valid_string(remaining - 2)}"
+    else:
+        return f"{new_brackets[0]}{build_valid_string(remaining - 2)}{new_brackets[1]}"
+
+
 @server.route("/input")
 def input_string():
     input_length = 50
@@ -16,26 +27,10 @@ def input_string():
 
     if is_correct:
         # Return a valid input
-        open_brackets = ["(", "[", "{"]
-        close_brackets = {"(": ")", "[": "]", "{": "}"}
-        close_stack = []
-        input_list = []
-        while len(close_stack) + len(input_list) < input_length:
-            if close_stack and heads_or_tails():
-                # Close last opened bracket
-                new_el = close_stack.pop(-1)
-            else:
-                # Open a new bracket
-                new_el = random.choice(open_brackets)
-                close_stack.append(close_brackets[new_el])
-            input_list.append(new_el)
-
-        # Close everything
-        input_list.extend(close_stack[::-1])
-        input_string = "".join(input_list)
+        input_string = build_valid_string(input_length)
     else:
         # Return an invalid input
-        alphabet = ["(", ")", "[", "]", "{", "}"]
+        alphabet = "()[]{}"
         input_string = "".join(random.choice(alphabet) for _ in range(input_length))
 
     return input_string
