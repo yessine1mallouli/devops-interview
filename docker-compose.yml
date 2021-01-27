@@ -1,0 +1,17 @@
+version: '3'
+services:
+  generator:
+    container_name: generator-app
+    build:
+      context: ../
+      dockerfile: generator-server/src/Dockerfile
+    ports:
+      - "5000:5000"
+  solver:
+    container_name: solver
+    build:
+      context: ../
+      dockerfile: solver-server/src/Dockerfile
+    ports:
+      - "5001:5001"
+
