@@ -7,4 +7,11 @@ services:
       dockerfile: generator-server/src/Dockerfile
     ports:
       - "5000:5000"
+  generator:
+    container_name: solver-app
+    build:
+      context: ../
+      dockerfile: solver-server/src/Dockerfile
+    ports:
+      - "5001:5001"
   
